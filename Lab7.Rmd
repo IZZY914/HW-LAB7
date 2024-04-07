@@ -1,0 +1,108 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+load("~/Documents/izzy work/Household_Pulse_data_ph4c2.RData")
+```
+```{r}
+require(plyr)
+require(dplyr)
+require(tidyverse)
+require(ggplot2)
+require(stargazer)
+```
+```{r}
+load("Household_Pulse_data_ph4c2.RData")
+```
+```{r}
+select1 <- (Household_Pulse_data$MHLTH_NEED != "NA")
+d_kids <- subset(Household_Pulse_data,select1)
+```
+```{r}
+d_kids$MentHealthKids <- as.numeric(
+(d_kids$MHLTH_NEED == "all children need mental health treatment") |
+(d_kids$MHLTH_NEED == "some but not all children") )
+```
+```{r}
+ddply(d_kids,.(RRACE), summarize, avg = mean(MentHealthKids))
+```
+```{r}
+ols_out1 <- lm(MentHealthKids ~ -1 + RRACE, data = d_kids)
+stargazer(ols_out1, type = "text")
+```
+```{r}
+ols_out1a <- lm(MentHealthKids ~ RRACE, data = d_kids)
+stargazer(ols_out1a, type = "Text")
+```
+```{r}
+p_avg_byrace <- ggplot(d_kids, aes(x = RRACE, fill = MHLTH_NEED))
+p_avg_byrace + geom_bar(position = "fill") +
+scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.85)
+```
+```{r}
+ols_out2 <- lm(MentHealthKids ~ RRACE + RHISPANIC, data = d_kids)
+stargazer(ols_out2, type = "text")
+```
+```{r}
+ols_out2a <- lm(MentHealthKids ~ RRACE*RHISPANIC, data = d_kids)
+stargazer(ols_out2a, type = "text")
+```
+```{r}
+anova(ols_out2,ols_out2a)
+```
+```{r}
+p_avg_byrace <- ggplot(d_kids, aes(x = RRACE, fill = MHLTH_NEED))
+p_avg_byrace + geom_bar(position = "fill") +
+scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.85) +
+facet_grid(~RHISPANIC)
+```
+```{r}
+ols_out3 <- lm(MentHealthKids ~ RHISPANIC*RRACE*EEDUC*MS + PRIVHLTH, data = d_kids)
+stargazer(ols_out3, type = "text")
+```
+```{r}
+ols_out3a <- lm(MentHealthKids ~ RHISPANIC*RRACE*EEDUC + MS + PRIVHLTH, data = d_kids)
+```
+```{r}
+anova(ols_out2a,ols_out3a)
+```
+Practice
+
+```{r}
+ols_out1a <- lm(MentHealthKids ~ RRACE, data = d_kids)
+stargazer(ols_out1a, type = "Text")
+```
+```{r}
+p_avg_byrace <- ggplot(d_kids, aes(x = RRACE, fill = INCOME))
+p_avg_byrace + geom_bar(position = "fill") +
+scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.85)
+```
+```{r}
+ols_out1a <- lm(MentHealthKids ~ RRACE, data = d_kids)
+stargazer(ols_out1a, type = "Text")
+```
+```{r}
+p_avg_byrace <- ggplot(d_kids, aes(x = RRACE, fill = EEDUC))
+p_avg_byrace + geom_bar(position = "fill") +
+scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.85) +
+facet_grid(~RHISPANIC)
+```
+```{r}
+ols_out1a <- lm(MentHealthKids ~ PRIVHLTH, data = d_kids)
+stargazer(ols_out1a, type = "Text")
+```
+```{r}
+p_avg_byrace <- ggplot(d_kids, aes(x = PRIVHLTH, fill = INCOME))
+p_avg_byrace + geom_bar(position = "fill") +
+scale_fill_viridis_d(option = "mako", begin = 0.3, end = 0.85)
+```
+HW 
+This article is about associations between parental educational attainment and youth outcomes and role of race/ethnicity. The question researchers have is whether parental educational fulfillment is associated with the similar amount of health benefits for a variety of ethnic groups. This study had 10,619 youth ranging from age 12 to 17 years who were participants from a wave 1 of the population assessment of tobacco and health study. Variables that were measured were aggression, tobacco dependence, psychological distress and chronic medical conditions. Findings were that parental educational fulfillment was associated with fewer health benefits for hispanics as opposed to non hispanic counterparts. These results demonstrate that closing the gap in health disparities between ethnic groups goes further simplifying balancing socioeconomic resources. 
+This article states the importance of mental health in children. These two dependents are important for my group project because we want to find how race, social anxiety, and social behavior impact children and the aid they receive. Mental health in children can impact their relationship, education, physical health, chronic disease, and health behaviors. Public health surveillance of children’s mental health plays an important role in monitoring trends, informing prevention, identifying differences, intervention efforts and informing prevention. According to the data, mental disorders often start in early childhood and affect children in many aspects of their life.
+Assari, S., Caldwell, C. H., & Bazargan, M. (2019). Association Between Parental Educational Attainment and Youth Outcomes and Role of Race/Ethnicity. JAMA network open, 2(11), e1916018. https://doi.org/10.1001/jamanetworkopen.2019.16018
+Bitsko, R. H., Claussen, A. H., Lichstein, J., Black, L. I., Jones, S. E., Danielson, M. L., Hoenig, J. M., Davis Jack, S. P., Brody, D. J., Gyawali, S., Maenner, M. J., Warner, M., Holland, K. M., Perou, R., Crosby, A. E., Blumberg, S. J., Avenevoli, S., Kaminski, J. W., Ghandour, R. M., & Contributor (2022). Mental Health Surveillance Among Children - United States, 2013-2019. MMWR supplements, 71(2), 1–42. https://doi.org/10.15585/mmwr.su7102a1
